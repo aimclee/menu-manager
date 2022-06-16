@@ -1,6 +1,5 @@
 // step1. 요구사항 정리하기
 
-
 // TODO 메뉴 추가
 // - [x] 메뉴의 이름을 입력받고 엔터키 입력으로 추가한다.
 // - [x] 메뉴의 이름을 입력받고 확인 버튼을 클릭하면 메뉴를 추가한다.
@@ -9,11 +8,9 @@
 // - [x] 메뉴가 추가되고 나면, input은 빈 값으로 초기화한다.
 // - [x] 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
-
 // TODO 메뉴 수정
 // - [x] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정하는 모달창(prompt)이 뜬다.
 // - [x] 모달창에서 신규메뉴명을 입력 받고, 확인버튼을 누르면 메뉴가 수정된다.
-
 
 // TODO 메뉴 삭제
 // - [x] 메뉴 삭제 버튼 클릭 이벤트를 받고, 메뉴 삭제 컨펌 모달창이 뜬다.
@@ -27,13 +24,16 @@
 
 // - [] TODO localStorage Read & Write
 //       [] localStorage에 있는 데이터를 저장한다.
+//         [] 메뉴를 추가할 때
+//         [] 메뉴를 수정할 때
+//         [] 메뉴를 삭제할 때
 //       [] localStorage에 있는 데이터를 읽어온다.
 // - [] TODO 카테고리별 메뉴판 관리
-//       [] 에스프레소 메뉴 관리  
-//       [] 프라푸치노 메뉴 관리  
-//       [] 블렌디드 메뉴 관리  
-//       [] 티바나 메뉴 관리  
-//       [] 디저트 메뉴 관리  
+//       [] 에스프레소 메뉴 관리
+//       [] 프라푸치노 메뉴 관리
+//       [] 블렌디드 메뉴 관리
+//       [] 티바나 메뉴 관리
+//       [] 디저트 메뉴 관리
 // - [] TODO 페이지 최초로 접근할 시 Read & Rendering
 //       [] 페이지에 최초로 로딩될 때 localStorage에 에스프레소 메뉴를 읽어온다.
 //       [] 에스프레소 메뉴를 페이지에 그려준다.
@@ -43,106 +43,136 @@
 //       [] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
 //       [] 클릭 이벤트에서 가장 가까운 li element의 class 속성 값에 sold-out을 추가한다.
 
-
 const $ = (selector) => document.querySelector(selector);
 
 const store = {
-  setLocalStorage(menu){
-    localStorage.setItem("menu", JSON.stringify(menu));
-  },
-  getLocalStorage(){
-    localStorage.getItem("menu");
-  },
-}
+	setLocalStorage(menu) {
+		localStorage.setItem("menu", JSON.stringify(menu)); // 문자열로 저장
+	},
+	getLocalStorage() {
+		return JSON.parse(localStorage.getItem("menu")); // 문자열로 저장된 데이터 parsing
+	},
+};
 
 function App() {
-  // 상태(이 앱에서 변하는 것) - 메뉴명 
-  const updateMenuCount = () => {
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
-  };
-  
-  const addMenuName = () => {
-    if ($("#espresso-menu-name").value === "") {
-      alert("값을 입력해주세요");
-      return;
+	this.menu = [];
+  this.init = () => {
+    if (store.getLocalStorage().length > 1){
+      this.menu = store.getLocalStorage();
     }
+    render();
+  }
 
-    const espressoMenuName = $("#espresso-menu-name").value;
-    const menuItemTemplate = (espressoMenuName) => {
+  const render = () =>{
+    const template = this.menu 
+    .map((item, index) => { //map은 배열로 return값을 준다. 
+      return `
+    <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
+    <span class="w-100 pl-2 menu-name">${item.name}</span>
+    <button
+      type="button"
+      class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+    >
+      수정
+    </button>
+    <button
+      type="button"
+      class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+    >
+      삭제
+    </button>
+  </li>`;
+    })
+    .join("");
+  // const menuItemTemplate = (espressoMenuName) => {
 
-      return `<li class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
-      <button
-        type="button"
-        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-      >
-        수정
-      </button>
-      <button
-        type="button"
-        class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-      >
-        삭제
-      </button>
-    </li>`;
-    };
+  //   return `<li class="menu-list-item d-flex items-center py-2">
+  //   <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
+  //   <button
+  //     type="button"
+  //     class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+  //   >
+  //     수정
+  //   </button>
+  //   <button
+  //     type="button"
+  //     class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+  //   >
+  //     삭제
+  //   </button>
+  // </li>`;
+  // };
 
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "afterbegin",
-      menuItemTemplate(espressoMenuName)
-    );
+  $("#espresso-menu-list").innerHTML = template;
 
-    updateMenuCount();
-
-    $('#espresso-menu-name').value = "";
-
-
-
+  updateMenuCount();
   };
 
-  // refactoring : 자주 쓰는 함수의 기능을 따로 분류
+	// 상태(이 앱에서 변하는 것) - 메뉴명
+	const updateMenuCount = () => {
+		const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+		$(".menu-count").innerText = `총 ${menuCount}개`;
+	};
+
+	const addMenuName = () => {
+		if ($("#espresso-menu-name").value === "") {
+			alert("값을 입력해주세요");
+			return;
+		}
+
+		const espressoMenuName = $("#espresso-menu-name").value;
+		this.menu.push({ name: espressoMenuName });
+		store.setLocalStorage(this.menu);
+    render();
+
+		$("#espresso-menu-name").value = "";
+	};
+
+	// refactoring : 자주 쓰는 함수의 기능을 따로 분류
   const updateMenuName = (e) => {
-    const $menuName = e.target.closest("li").querySelector(".menu-name")
-    const updatedMenuName = prompt("메뉴명을 수정하세요", $menuName.innerText);
+    const menuId = e.target.closest("li").dataset.menuId //data-menu-id="${index}"
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
+    this.menu[menuId].name = updatedMenuName; //menuId값의 name 업데이트된 네임으로 바꿈 
+    store.setLocalStorage(this.menu);
     $menuName.innerText = updatedMenuName;
-  };
+  }
 
-  const removeMenuName = (e) =>{
-    if (confirm("정말 삭제하시겠습니까?")) {
-      e.target.closest('li').remove();
-      updateMenuCount();
-    };
-  };
+	const removeMenuName = (e) => {
+		if (confirm("정말 삭제하시겠습니까?")) {
+      const menuId = e.target.closest('li').dataset.menuId;
+      this.menu.splice(menuId,1);
+      store.setLocalStorage(this.menu);
+			e.target.closest("li").remove();
+			updateMenuCount();
+		}
+	};
 
+	// event delegation(위임)
+	$("#espresso-menu-list").addEventListener("click", (e) => {
+		if (e.target.classList.contains("menu-edit-button")) {
+			updateMenuName(e);
+		}
+		if (e.target.classList.contains("menu-remove-button")) {
+			removeMenuName(e);
+		}
+	});
 
-  // event delegation(위임)
-  $("#espresso-menu-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("menu-edit-button")) {
-      updateMenuName(e);
-    }
-    if (e.target.classList.contains("menu-remove-button")) {
-      removeMenuName(e);
-    }
-  });
+	// form 태그가 자동으로 전송되는걸 막아준다.
+	$("#espresso-menu-form").addEventListener("submit", (e) => {
+		e.preventDefault();
+	});
 
-  // form 태그가 자동으로 전송되는걸 막아준다.
-  $("#espresso-menu-form")
-    .addEventListener("submit", (e) => {
-      e.preventDefault();
-    });
+	$("#espresso-menu-submit-button").addEventListener("click", addMenuName);
 
-
-  $("#espresso-menu-submit-button").addEventListener("click", addMenuName);
-
-  // 메뉴의 이름을 입력받기
-  $("#espresso-menu-name")
-    .addEventListener("keypress", (e) => {
-      if (e.key !== "Enter") {
-        return;
-      }
-      addMenuName();
-    });
+	// 메뉴의 이름을 입력받기
+	$("#espresso-menu-name").addEventListener("keypress", (e) => {
+		if (e.key !== "Enter") {
+			return;
+		}
+		addMenuName();
+	});
 }
 
-App();
+const app = new App(); // new 키워드를 사용하여 생성자 함수를 호출하게되면 이때의 this는 만들어질 객체를 참조한다.
+app.init();
