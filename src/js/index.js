@@ -38,10 +38,10 @@
 //       [x] 페이지에 최초로 로딩될 때 localStorage에 에스프레소 메뉴를 읽어온다.
 //       [x] 에스프레소 메뉴를 페이지에 그려준다.
 // - [] TODO 품절 상태 관리
-//       [] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 `sold-out` class를 추가하여 상태를 변경한다.
-//       [] 품절 버튼을 추가한다.
-//       [] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
-//       [] 클릭 이벤트에서 가장 가까운 li element의 class 속성 값에 sold-out을 추가한다.
+//       [x] 품절 상태인 경우를 보여줄 수 있게, 품절 버튼을 추가하고 `sold-out` class를 추가하여 상태를 변경한다.
+//       [x] 품절 버튼을 추가한다.
+//       [x] 품절 버튼을 클릭하면 localStorage에 상태값이 저장된다.
+//       [x] 클릭 이벤트에서 가장 가까운 li element의 class 속성 값에 sold-out을 추가한다.
 
 import { $ } from "./utils/dom.js";
 import store from "./store/index.js";
@@ -115,7 +115,7 @@ function App() {
 
 	// refactoring : 자주 쓰는 함수의 기능을 따로 분류
 	const updateMenuName = (e) => {
-		const menuId = e.target.closest("li").dataset.menuId; //data-menu-id="${index}"
+		const menuId = e.target.closest("li").dataset.menuId; //'data-' -> dataset, 'menu-id' -> menuId
 		const $menuName = e.target.closest("li").querySelector(".menu-name");
 		const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
 		this.menu[this.currentCategory][menuId].name = updatedMenuName; //menuId값의 name 업데이트된 네임으로 바꿈
@@ -135,7 +135,7 @@ function App() {
 	const soldOutMenu = (e) => {
 		const menuId = e.target.closest("li").dataset.menuId;
 		this.menu[this.currentCategory][menuId].soldOut =
-			!this.menu[this.currentCategory][menuId].soldOut;
+			!this.menu[this.currentCategory][menuId].soldOut; // '!undefined' is true because 'undefined' implicitly converts to false.
 		store.setLocalStorage(this.menu);
 		render();
 	};
